@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  ali-mysql:
+    container_name: ali-mysql
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: "12345"
+      MYSQL_DATABASE: "dev_cockpit"
+    ports:
+      - "3306:3306"
+
+  ali-api:
+    build: .
+    container_name: ali-api
+    image: ali-api
+    volumes:
+      - .:/app
+    tty: true
+    ports:
+      - 5000:5000
+      - 80:80
+    environment:
+       - FLASK_API_SQLALCHEMY_DATABASE_URI=mysql+pymysql://root:12345@ali-mysql:3306/dev_cockpit
+    depends_on:
+      - ali-mysql
+    command: ["python3","run.py"]
+
